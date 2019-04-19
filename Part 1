@@ -1,12 +1,77 @@
+# GLM
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/glm.html
 # GLM - Regression
 # GLM - Logistic
+import h2o
+h2o.init()
+from h2o.estimators.glm import H2OGeneralizedLinearEstimator
+
+prostate = h2o.import_file("https://h2o-public-test-data.s3.amazonaws.com/smalldata/prostate/prostate.csv")
+prostate['CAPSULE'] = prostate['CAPSULE'].asfactor()
+prostate['RACE'] = prostate['RACE'].asfactor()
+prostate['DCAPS'] = prostate['DCAPS'].asfactor()
+prostate['DPROS'] = prostate['DPROS'].asfactor()
+
+predictors = ["AGE", "RACE", "VOL", "GLEASON"]
+response_col = "CAPSULE"
+
+glm_model = H2OGeneralizedLinearEstimator(family= "binomial", lambda_ = 0, compute_p_values = True)
+glm_model.train(predictors, response_col, training_frame= prostate)
+
+# Coefficients that can be applied to the non-standardized data.
+print(glm_model.coef())
+{u'GLEASON': 1.2503593867263176, u'VOL': -0.012783348665664449, u'AGE': -0.017888697161812357, u'Intercept': -6.6751553940827195, u'RACE.2': -0.5899232636956354, u'RACE.1': -0.44278751680880707}
+
+# Coefficients fitted on the standardized data (requires standardize = True, which is on by default)
+print(glm_model.coef_norm())
+{u'GLEASON': 1.365334151581163, u'VOL': -0.2345440232267344, u'AGE': -0.11676080128780757, u'Intercept': -0.07610006436753876, u'RACE.2': -0.5899232636956354, u'RACE.1': -0.44278751680880707}
+
+# Print the Coefficients table
+glm_model._model_json['output']['coefficients_table']
+Coefficients: glm coefficients
+names      coefficients    std_error    z_value    p_value      standardized_coefficients
+---------  --------------  -----------  ---------  -----------  ---------------------------
+Intercept  -6.67516        1.93176      -3.45548   0.000549318  -0.0761001
+RACE.1     -0.442788       1.32423      -0.334373  0.738098     -0.442788
+RACE.2     -0.589923       1.37347      -0.429514  0.667549     -0.589923
+AGE        -0.0178887      0.0187019    -0.956516  0.338812     -0.116761
+VOL        -0.0127833      0.00751435   -1.70119   0.0889072    -0.234544
+GLEASON    1.25036         0.156156     8.0071     1.22125e-15  1.36533
+
+# Print the Standard error
+print(glm_model._model_json['output']['coefficients_table']['std_error'])
+[1.9317603626604352, 1.3242308316851008, 1.3734657932878116, 0.01870193337051072, 0.007514353657915356, 0.15615627100850296]
+
+# Print the p values
+print(glm_model._model_json['output']['coefficients_table']['p_value'])
+[0.0005493180609459358, 0.73809783692024, 0.6675489550762566, 0.33881164088847204, 0.0889071809658667, 1.2212453270876722e-15]
+
+# Print the z values
+print(glm_model._model_json['output']['coefficients_table']['z_value'])
+[-3.4554779791058787, -0.3343733631736653, -0.42951434726559384, -0.9565159284557886, -1.7011907141473064, 8.007103260414265]
+
+# Retrieve a graphical plot of the standardized coefficient magnitudes
+glm_model.std_coef_plot()
+
 # GLM - Classification
 # Decision Trees - Random Forest
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/drf.html
+
 # Decision Trees - GBM
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/gbm.html
+
 # Neural Networks
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/deep-learning.html
+
 # Convolutional Neural Networks (working with image data)
 # Support Vector Machines (SVM)
 # Primary Components Analysis (PCA)
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/pca.html
+
 # Naive Bayes
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/naive-bayes.html
+
 # K Nearest Neighbors (KNN)
+
 # Clustering Method - K Means
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/k-means.html
